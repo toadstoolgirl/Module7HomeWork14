@@ -7,20 +7,20 @@ using System.Text;
 namespace Module7HomeWork14
 {
 
-    //class Employee
-    //{
+    class Employee
+    {
 
-    //static int employeeId;
-    //public Employee() => employeeId++;
-    //public DateTime addingTime = DateTime.Now;
-    //public string fullName;
-    //public int age;
-    //public int height;
-    //public DateTime birthDate;
-    //public string birthPlace;
+        static int employeeId;
+        public Employee() => employeeId++;
+        public DateTime addingTime = DateTime.Now;
+        public string fullName;
+        public int age;
+        public int height;
+        public DateTime birthDate;
+        public string birthPlace;
 
 
-    //}
+    }
 
     class Program
     {
@@ -109,6 +109,8 @@ namespace Module7HomeWork14
 
                 using (StreamReader pr = File.OpenText(path))
                 {
+                    Console.WriteLine($"Enter employee's id");
+                    string empId = Console.ReadLine(); /*Enter employee's id*/
                     string employeeString = string.Empty;
                     var counter = 1;
                     while ((employeeString = pr.ReadLine()) != null)
@@ -120,13 +122,27 @@ namespace Module7HomeWork14
                         }
                         else
                         {
-                            Console.WriteLine($"employee's ID: {employeeArray[0]}");
-                            Console.WriteLine($"adding time: {employeeArray[1]}");
-                            Console.WriteLine($"employee's full name: {employeeArray[2]}");
-                            Console.WriteLine($"employee's age: {employeeArray[3]}");
-                            Console.WriteLine($"employee's height: {employeeArray[4]}");
-                            Console.WriteLine($"employee's birth date: {employeeArray[5]}");
-                            Console.WriteLine($"employee's birth place: {employeeArray[6]}");
+                            while (true)
+                            {
+                                if (employeeArray[0] == empId)
+                                {
+                                    Console.WriteLine($"employee's ID: {employeeArray[0]}");
+                                    Console.WriteLine($"adding time: {employeeArray[1]}");
+                                    Console.WriteLine($"employee's full name: {employeeArray[2]}");
+                                    Console.WriteLine($"employee's age: {employeeArray[3]}");
+                                    Console.WriteLine($"employee's height: {employeeArray[4]}");
+                                    Console.WriteLine($"employee's birth date: {employeeArray[5]}");
+                                    Console.WriteLine($"employee's birth place: {employeeArray[6]}");
+                                }
+                            
+
+                                else
+                                {
+                                    Console.WriteLine($"Data is corrupted, enter correct employee's ID ");
+                                    Console.WriteLine($"Enter employee's id");
+                                    Console.ReadLine(); 
+                                }
+                            }
                         }
 
                         Console.WriteLine("-----");
