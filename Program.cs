@@ -193,13 +193,13 @@ namespace Module7HomeWork14
                         {
                                 string[] employeeArray = readText[empId].Split('#');
                                 var employeeId = employeeArray[0];
-                                var addingTime = DateTime.Now;
+                                var addingTime = employeeArray[1];
                                 Console.WriteLine($"Adding time: {addingTime}");
                                 Console.WriteLine($"Enter employee's new full name");
                                 var fullName = Console.ReadLine();
                                 Console.WriteLine($"Enter employee's new birth date");
                                 var birthDate = Convert.ToDateTime(Console.ReadLine());
-                                var age = (addingTime - birthDate).Days / 365;
+                                var age = (DateTime.Now - birthDate).Days / 365;
                                 Console.WriteLine($"Enter employee's new height");
                                 var height = Console.ReadLine();
                                 Console.WriteLine($"Enter employee's new birth place");
@@ -274,19 +274,28 @@ namespace Module7HomeWork14
 
         static void SortByDateTime() /*Выборка записей в диапазоне дат*/
         {
-
-
-            //Console.WriteLine("Введите начаьную дату");
             //var a = Convert.ToDateTime(Console.ReadLine());
-            //Console.WriteLine("Введите конечную дату");
-            //var b = Convert.ToDateTime(Console.ReadLine());
 
+            //Console.WriteLine($"Enter 1st date");
+            //DateTime.TryParse(Console.ReadLine(), out DateTime a);
+            //Console.WriteLine($"Enter 2nd date");
+            //DateTime.TryParse(Console.ReadLine(), out DateTime b);
+            //string[] readText = File.ReadAllLines(path);
+            ////foreach (string s in readText)  
+            //for (int i = 0; i < readText.Length; i++)
+            //{
+            //    //Employee addingTime = readText[i]
+            //    if ()
+            //    { 
+                
+            //    }
+            //}
 
         }
 
         static void AscendingDateTime() /*Сортировка карточек сотрудников по возрастанию даты внесения карточки*/
         {
-           
+
         }
         static void DescendingDateTime() /*Сортировка карточек сотрудников по убыванию даты внесения карточки*/
         {
