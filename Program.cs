@@ -274,23 +274,29 @@ namespace Module7HomeWork14
 
         static void SortByDateTime() /*Выборка записей в диапазоне дат*/
         {
-            //var a = Convert.ToDateTime(Console.ReadLine());
 
-            //Console.WriteLine($"Enter 1st date");
-            //DateTime.TryParse(Console.ReadLine(), out DateTime a);
-            //Console.WriteLine($"Enter 2nd date");
-            //DateTime.TryParse(Console.ReadLine(), out DateTime b);
-            //string[] readText = File.ReadAllLines(path);
-            ////foreach (string s in readText)  
-            //for (int i = 0; i < readText.Length; i++)
-            //{
-            //    //Employee addingTime = readText[i]
-            //    if ()
-            //    { 
-                
-            //    }
-            //}
+            List<string> people = new List<string>();
+            Console.WriteLine($"Enter 1st date");
+            DateTime.TryParse(Console.ReadLine(), out DateTime a);
+            Console.WriteLine($"Enter 2nd date");
+            DateTime.TryParse(Console.ReadLine(), out DateTime b);
 
+            string[] readText = File.ReadAllLines(path);
+            foreach (string s in readText)
+            {
+                var ss=s.Split('#');
+                var c = Convert.ToDateTime(ss[1]);
+                while (a <= c && c <= b)
+                {
+                    people.Add(new string (s));
+                    break;
+                }
+            }
+
+            foreach (var pin in people)
+            {
+                Console.WriteLine(pin);
+            }
         }
 
         static void AscendingDateTime() /*Сортировка карточек сотрудников по возрастанию даты внесения карточки*/
