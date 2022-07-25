@@ -1,18 +1,15 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Xml;
 
 namespace Module7HomeWork14
 {
 
     class Employee
     {
-        static int employeeId;
-        public Employee() => employeeId++;
+        public int employeeId;
         public DateTime addingTime = DateTime.Now;
         public string fullName;
         public int age;
@@ -87,27 +84,63 @@ namespace Module7HomeWork14
             }
         }
 
+        static List<Employee> ReadFile() /*Метод считывания данных из файла*/
+        {
+            if (!File.Exists(path))
+            {
+                Console.WriteLine("The file don't exist and could't be read.");
+                return null;
+            }
+            else
+            {
+                using (StreamReader pr = File.OpenText(path))
+                {
+                    string[] readText = File.ReadAllLines(path);
+                    var employeeCollection = new List<Employee>();
+                    foreach (var rdTxt in readText)
+                    {
+                        string[] employeeArray = rdTxt.Split('#');
+                        var employee = new Employee();
+                        employee.employeeId = int.Parse(employeeArray[0]);
+                        employee.addingTime = DateTime.Parse(employeeArray[1]);
+                        employee.fullName = employeeArray[2];
+                        employee.age = int.Parse(employeeArray[3]);
+                        employee.height = int.Parse(employeeArray[4]);
+                        employee.birthDate = DateTime.Parse(employeeArray[5]);
+                        employee.birthPlace = employeeArray[6];
+                        employeeCollection.Add(employee);
+                    }
+                    return employeeCollection;
+                }
+            }
+        } 
         static void Add() /*Создание записи о сотруднике*/
         {
-            int count = 0;
-            if (File.Exists(path))
-            { count = System.IO.File.ReadAllLines(path).Length; }
-            int employeeId = ++count;
-            Console.WriteLine($"Employee's ID: {employeeId}");
-            var addingTime = DateTime.Now;
-            Console.WriteLine($"Adding time: {addingTime}");
-            Console.WriteLine($"Enter employee's full name");
-            var fullName = Console.ReadLine();
-            Console.WriteLine($"Enter employee's birth date");
-            var birthDate = Convert.ToDateTime(Console.ReadLine());
-            var age = (addingTime - birthDate).Days / 365;
-            Console.WriteLine($"Enter employee's height");
-            var height = Console.ReadLine();
+                var employeeCollection = ReadFile();
+                var employee = new Employee();
+                int count = employeeCollection.Count;
+                employee.employeeId= ++count;
+                Console.WriteLine($"Employee's ID: {employee.employeeId}");
+                Console.WriteLine($"Adding time: {employee.addingTime}");
+                Console.WriteLine($"Enter employee's full name");
+                employee.fullName = Console.ReadLine();
+                Console.WriteLine($"Enter employee's birth date");
+                employee.birthDate = DateTime.Parse(Console.ReadLine());
+                employee.age = (employee.addingTime - employee.birthDate).Days / 365;
+                Console.WriteLine($"Enter employee's height");
+                employee.height = int.Parse(Console.ReadLine());
+                Console.WriteLine($"Enter employee's birth place");
+                employee.birthPlace = Console.ReadLine();
+                employeeCollection.Add(employee);
 
-            Console.WriteLine($"Enter employee's birth place");
-            var birthPlace = Console.ReadLine();
-
-            var employeeString = $"{employeeId}#{addingTime:dd.MM.yyyy HH:mm}#{fullName}#{age}#{height}#{birthDate:dd.MM.yyyy}#{birthPlace}";
+            var employeeString = 
+                $"{employee.employeeId}" +
+                $"#{employee.addingTime:dd.MM.yyyy HH:mm}" +
+                $"#{employee.fullName}" +
+                $"#{employee.age}" +
+                $"#{employee.height}" +
+                $"#{employee.birthDate:dd.MM.yyyy}" +
+                $"#{employee.birthPlace}";
 
             using (StreamWriter writer = (File.Exists(path)) ? File.AppendText(path) : File.CreateText(path))
 
@@ -118,114 +151,105 @@ namespace Module7HomeWork14
 
         static void Print() /*Вывод записи о сотруднике по Id*/
         {
+            var employeeCollection = ReadFile();
+            Console.WriteLine($"Enter employee's id to print his data");
 
-            if (!File.Exists(path))
+            if (int.TryParse(Console.ReadLine(), out int empId))
             {
-                Console.WriteLine("The file don't exist and could't be read.");
-            }
-            else
-            {
-                using (StreamReader pr = File.OpenText(path))
+                foreach (var employee in employeeCollection)
                 {
-                    Console.WriteLine($"Enter employee's id");
 
-                    if (int.TryParse(Console.ReadLine(), out int empId))
+                    if(employee.employeeId == empId)
                     {
-                        string[] readText = File.ReadAllLines(path);
-
-                        if (readText.Length <= (--empId))
-                        {
-                            Console.WriteLine($"Entered employee's ID not exist");
-                            Print();
-                        }
-                        else
-                        {
-                            string[] employeeArray = readText[empId].Split('#');
-                            if (employeeArray.Length != 7)
-                            {
-                                Console.WriteLine($"Data of employee n.{empId} is corrupted");
-                            }
-                            else
-                            {
-                                Console.WriteLine($"employee's ID: {employeeArray[0]}");
-                                Console.WriteLine($"adding time: {employeeArray[1]}");
-                                Console.WriteLine($"employee's full name: {employeeArray[2]}");
-                                Console.WriteLine($"employee's age: {employeeArray[3]}");
-                                Console.WriteLine($"employee's height: {employeeArray[4]}");
-                                Console.WriteLine($"employee's birth date: {employeeArray[5]}");
-                                Console.WriteLine($"employee's birth place: {employeeArray[6]}");
-                                Console.WriteLine("-----");
-                            }
-                        }
-                    }
-
-                    else
-                    {
-                        Console.WriteLine("no number entered");
-                        Print();
+                        Console.WriteLine($"employee's ID: {employee.employeeId}");
+                        Console.WriteLine($"adding time: {employee.addingTime}");
+                        Console.WriteLine($"employee's full name: {employee.fullName}");
+                        Console.WriteLine($"employee's age: {employee.age}");
+                        Console.WriteLine($"employee's height: {employee.height}");
+                        Console.WriteLine($"employee's birth date: {employee.birthDate}");
+                        Console.WriteLine($"employee's birth place: {employee.birthPlace}");
+                        Console.WriteLine("-----");
+                    break;
                     }
                 }
             }
+            else
+            {
+                Console.WriteLine("no number entered");
+                Print();
+            }
+
         }
 
         static void ReAdd() /*Редактирование записи о сотруднике по Id*/
         {
-            if (!File.Exists(path))
+            var employeeCollection = ReadFile();
+            foreach (var employee in employeeCollection)
             {
-                Console.WriteLine("The file don't exist and could't be read.");
-            }
-            else
-            {
-                using (StreamReader pr = File.OpenText(path))
-                {
-                    Console.WriteLine($"Enter employee's id");
+                Console.WriteLine($"Enter employee's id to correct his data");
 
-                    if (int.TryParse(Console.ReadLine(), out int empId))
+                if (int.TryParse(Console.ReadLine(), out int empId))
+                {
+                    if (empId < 1 || employeeCollection.Count < empId)
                     {
-                        string[] readText = File.ReadAllLines(path);
-                        
-                        if (readText.Length < (--empId))
+                        Console.WriteLine($"Entered employee's ID not exist");
+                        ReAdd();
+                    }
+                    else
+                    {
+                        if (employee.employeeId != empId)
                         {
-                            Console.WriteLine($"Entered employee's ID not exist");
-                            Print();
+                            var employeeString =
+                                            $"{employee.employeeId}" +
+                                            $"#{employee.addingTime:dd.MM.yyyy HH:mm}" +
+                                            $"#{employee.fullName}" +
+                                            $"#{employee.age}" +
+                                            $"#{employee.height}" +
+                                            $"#{employee.birthDate:dd.MM.yyyy}" +
+                                            $"#{employee.birthPlace}";
+                            using (StreamWriter writer = (File.Exists(path1)) ? File.AppendText(path1) : File.CreateText(path1))
+
+                            {
+                                writer.WriteLine(employeeString);
+                            }
+                           
                         }
+
                         else
                         {
-                                string[] employeeArray = readText[empId].Split('#');
-                                var employeeId = employeeArray[0];
-                                var addingTime = employeeArray[1];
-                                Console.WriteLine($"Adding time: {addingTime}");
-                                Console.WriteLine($"Enter employee's new full name");
-                                var fullName = Console.ReadLine();
-                                Console.WriteLine($"Enter employee's new birth date");
-                                var birthDate = Convert.ToDateTime(Console.ReadLine());
-                                var age = (DateTime.Now - birthDate).Days / 365;
-                                Console.WriteLine($"Enter employee's new height");
-                                var height = Console.ReadLine();
-                                Console.WriteLine($"Enter employee's new birth place");
-                                var birthPlace = Console.ReadLine();
+                            Console.WriteLine($"Employee's ID: {employee.employeeId}");
+                            Console.WriteLine($"Adding time: {employee.addingTime}");
+                            Console.WriteLine($"Enter employee's new full name");
+                            employee.fullName = Console.ReadLine();
+                            Console.WriteLine($"Enter employee's new birth date");
+                            employee.birthDate = DateTime.Parse(Console.ReadLine());
+                            employee.age = (employee.addingTime - employee.birthDate).Days / 365;
+                            Console.WriteLine($"Enter employee's new height");
+                            employee.height = int.Parse(Console.ReadLine());
+                            Console.WriteLine($"Enter employee's new birth place");
+                            employee.birthPlace = Console.ReadLine();
 
-                                string employeeString = $"{employeeId}#{addingTime:dd.MM.yyyy HH:mm}#{fullName}#{age}#{height}#{birthDate:dd.MM.yyyy}#{birthPlace}";
+                            var employeeString =
+                                            $"{employee.employeeId}" +
+                                            $"#{employee.addingTime:dd.MM.yyyy HH:mm}" +
+                                            $"#{employee.fullName}" +
+                                            $"#{employee.age}" +
+                                            $"#{employee.height}" +
+                                            $"#{employee.birthDate:dd.MM.yyyy}" +
+                                            $"#{employee.birthPlace}";
 
-                                using (StreamWriter writer = (File.Exists(path1)) ? File.AppendText(path1) : File.CreateText(path1))
+                            using (StreamWriter writer = (File.Exists(path1)) ? File.AppendText(path1) : File.CreateText(path1))
 
-                                {
-                                    writer.WriteLine(employeeString);
-                                }
-                            foreach (string s in readText)
                             {
-                                while (s != readText[empId])
-                                {
-                                    using (StreamWriter writer = (File.Exists(path1)) ? File.AppendText(path1) : File.CreateText(path1))
-
-                                    {
-                                        writer.WriteLine(s);
-                                    }
-                                    break;
-                                }
+                                writer.WriteLine(employeeString);
                             }
                         }
                     }
+                }
+                else
+                {
+                    Console.WriteLine("no number entered");
+                    ReAdd();
                 }
             }
         }
@@ -233,79 +257,103 @@ namespace Module7HomeWork14
         static void Delete() /*Удаление записи о сотруднике по Id*/
         {
 
-            if (!File.Exists(path))
+            var employeeCollection = ReadFile();
+            foreach (var employee in employeeCollection)
             {
-                Console.WriteLine("The file don't exist and could't be read.");
-            }
-            else
-            {
-                using (StreamReader pr = File.OpenText(path))
+                Console.WriteLine($"Enter employee's id to delete");
+
+                if (int.TryParse(Console.ReadLine(), out int empId))
                 {
-                    Console.WriteLine($"Enter employee's id");
 
-                    if (int.TryParse(Console.ReadLine(), out int empId))
+
+                    if (empId < 1 | employeeCollection.Count < empId)
                     {
-                        string[] readText = File.ReadAllLines(path);
+                        Console.WriteLine($"Entered employee's ID not exist");
+                        Delete();
+                    }
+                    else
+                    {
+                        if (empId != employee.employeeId)
+                        {
+                            Console.WriteLine($"Employee's ID: {employee.employeeId}");
+                            Console.WriteLine($"Adding time: {employee.addingTime}");
+                            Console.WriteLine($"Employee's full name:{employee.fullName}");
+                            Console.WriteLine($"Employee's age: {employee.age}");
+                            Console.WriteLine($"Employee's height: {employee.height}");
+                            Console.WriteLine($"employee's birth date: {employee.birthDate}");
+                            Console.WriteLine($"employee's birth place: {employee.birthPlace}");
+                            Console.WriteLine("-----");
 
-                        if (readText.Length < (--empId))
-                        {
-                            Console.WriteLine($"Entered employee's ID not exist");
-                            Print();
-                        }
-                        else
-                        {
-                            foreach (string s in readText)
+                            var employeeString =
+                                $"{employee.employeeId}" +
+                                $"#{employee.addingTime:dd.MM.yyyy HH:mm}" +
+                                $"#{employee.fullName}" +
+                                $"#{employee.age}" +
+                                $"#{employee.height}" +
+                                $"#{employee.birthDate:dd.MM.yyyy}" +
+                                $"#{employee.birthPlace}";
+
+                            using (StreamWriter writer = (File.Exists(path1)) ? File.AppendText(path1) : File.CreateText(path1))
+
                             {
-                                while (s != readText[empId])
-                                {
-                                    using (StreamWriter writer = (File.Exists(path1)) ? File.AppendText(path1) : File.CreateText(path1))
-
-                                    {
-                                        writer.WriteLine(s);
-                                    }
-                                    break;
-                                }
+                                writer.WriteLine(employeeString);
                             }
                         }
                     }
                 }
+                else
+                {
+                        Console.WriteLine($"This is not employee's ID");
+                        Delete();
+                }
+                
             }
         }
 
         static void SortByDateTime() /*Выборка записей в диапазоне дат*/
         {
-
-            List<string> people = new List<string>();
             Console.WriteLine($"Enter 1st date");
-            DateTime.TryParse(Console.ReadLine(), out DateTime a);
+            var correctFirstDate = DateTime.TryParse(Console.ReadLine(), out DateTime a);
             Console.WriteLine($"Enter 2nd date");
-            DateTime.TryParse(Console.ReadLine(), out DateTime b);
+            var correctSecondDate = DateTime.TryParse(Console.ReadLine(), out DateTime b);
 
-            string[] readText = File.ReadAllLines(path);
-            foreach (string s in readText)
-            {
-                var ss=s.Split('#');
-                var c = Convert.ToDateTime(ss[1]);
-                while (a <= c && c <= b)
-                {
-                    people.Add(new string (s));
-                    break;
-                }
-            }
+                if (!correctFirstDate)
+                { Console.WriteLine($"Incorrect 1st date"); }
 
-            foreach (var pin in people)
-            {
-                Console.WriteLine(pin);
-            }
+                else if (!correctSecondDate)
+                { Console.WriteLine($"Incorrect 2nd date"); }
+
+                    else
+                    {
+                        var employeeCollection = ReadFile();
+                        foreach (var employee in employeeCollection)
+                        {
+                            if (a <= employee.addingTime && employee.addingTime <= b)
+                            {
+                                Console.WriteLine($"employee's ID: {employee.employeeId}");
+                                Console.WriteLine($"adding time: {employee.addingTime}");
+                                Console.WriteLine($"employee's full name: {employee.fullName}");
+                                Console.WriteLine($"employee's age: {employee.age}");
+                                Console.WriteLine($"employee's height: {employee.height}");
+                                Console.WriteLine($"employee's birth date: {employee.birthDate}");
+                                Console.WriteLine($"employee's birth place: {employee.birthPlace}");
+                                Console.WriteLine("-----");
+                            }
+                        }
+                    }
         }
 
         static void AscendingDateTime() /*Сортировка карточек сотрудников по возрастанию даты внесения карточки*/
         {
-
+            var employeeCollection = ReadFile();
+            var newCollection = employeeCollection.OrderBy(e => e.addingTime);
+            Print(newCollection);
         }
         static void DescendingDateTime() /*Сортировка карточек сотрудников по убыванию даты внесения карточки*/
         {
-
+            var employeeCollection = ReadFile();
+            var newCollection = employeeCollection.OrderByDescending(e => e.addingTime);
+            Print(newCollection);
         }
 
         static void Help() /*Команда помощи выбора команды*/
