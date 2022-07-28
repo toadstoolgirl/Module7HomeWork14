@@ -46,7 +46,7 @@ namespace Module7HomeWork14
                     switch (comand)
                     {
                         case OptionCommand1:
-                            Print();
+                            SearchById();
                             break;
 
                         case OptionCommand2:
@@ -84,7 +84,7 @@ namespace Module7HomeWork14
             }
         }
 
-        static List<Employee> ReadFile() /*Метод считывания данных из файла*/
+        private static List<Employee> ReadFile() /*Метод считывания данных из файла*/
         {
             if (!File.Exists(path))
             {
@@ -113,27 +113,27 @@ namespace Module7HomeWork14
                     return employeeCollection;
                 }
             }
-        } 
+        }
         static void Add() /*Создание записи о сотруднике*/
         {
-                var employeeCollection = ReadFile();
-                var employee = new Employee();
-                int count = employeeCollection.Count;
-                employee.employeeId= ++count;
-                Console.WriteLine($"Employee's ID: {employee.employeeId}");
-                Console.WriteLine($"Adding time: {employee.addingTime}");
-                Console.WriteLine($"Enter employee's full name");
-                employee.fullName = Console.ReadLine();
-                Console.WriteLine($"Enter employee's birth date");
-                employee.birthDate = DateTime.Parse(Console.ReadLine());
-                employee.age = (employee.addingTime - employee.birthDate).Days / 365;
-                Console.WriteLine($"Enter employee's height");
-                employee.height = int.Parse(Console.ReadLine());
-                Console.WriteLine($"Enter employee's birth place");
-                employee.birthPlace = Console.ReadLine();
-                employeeCollection.Add(employee);
+            var employeeCollection = ReadFile();
+            var employee = new Employee();
+            int count = employeeCollection.Count;
+            employee.employeeId = ++count;
+            Console.WriteLine($"Employee's ID: {employee.employeeId}");
+            Console.WriteLine($"Adding time: {employee.addingTime}");
+            Console.WriteLine($"Enter employee's full name");
+            employee.fullName = Console.ReadLine();
+            Console.WriteLine($"Enter employee's birth date");
+            employee.birthDate = DateTime.Parse(Console.ReadLine());
+            employee.age = (employee.addingTime - employee.birthDate).Days / 365;
+            Console.WriteLine($"Enter employee's height");
+            employee.height = int.Parse(Console.ReadLine());
+            Console.WriteLine($"Enter employee's birth place");
+            employee.birthPlace = Console.ReadLine();
+            employeeCollection.Add(employee);
 
-            var employeeString = 
+            var employeeString =
                 $"{employee.employeeId}" +
                 $"#{employee.addingTime:dd.MM.yyyy HH:mm}" +
                 $"#{employee.fullName}" +
@@ -149,7 +149,7 @@ namespace Module7HomeWork14
             }
         }
 
-        static void Print() /*Вывод записи о сотруднике по Id*/
+        static void SearchById() /*Вывод записи о сотруднике по Id*/
         {
             var employeeCollection = ReadFile();
             Console.WriteLine($"Enter employee's id to print his data");
@@ -158,44 +158,51 @@ namespace Module7HomeWork14
             {
                 foreach (var employee in employeeCollection)
                 {
-
-                    if(employee.employeeId == empId)
+                    if (employee.employeeId == empId)
                     {
-                        Console.WriteLine($"employee's ID: {employee.employeeId}");
-                        Console.WriteLine($"adding time: {employee.addingTime}");
-                        Console.WriteLine($"employee's full name: {employee.fullName}");
-                        Console.WriteLine($"employee's age: {employee.age}");
-                        Console.WriteLine($"employee's height: {employee.height}");
-                        Console.WriteLine($"employee's birth date: {employee.birthDate}");
-                        Console.WriteLine($"employee's birth place: {employee.birthPlace}");
-                        Console.WriteLine("-----");
-                    break;
+                        Print(new List<Employee> { employee });
+                        break;
                     }
                 }
             }
             else
             {
                 Console.WriteLine("no number entered");
-                Print();
             }
+        }
 
+        private static void Print(List<Employee> employees) /*Вывод записи*/
+        {
+            foreach (var employee in employees)
+            {
+
+                Console.WriteLine($"employee's ID: {employee.employeeId}");
+                Console.WriteLine($"adding time: {employee.addingTime}");
+                Console.WriteLine($"employee's full name: {employee.fullName}");
+                Console.WriteLine($"employee's age: {employee.age}");
+                Console.WriteLine($"employee's height: {employee.height}");
+                Console.WriteLine($"employee's birth date: {employee.birthDate}");
+                Console.WriteLine($"employee's birth place: {employee.birthPlace}");
+                Console.WriteLine("-----");
+
+            }
         }
 
         static void ReAdd() /*Редактирование записи о сотруднике по Id*/
         {
-            var employeeCollection = ReadFile();
-            foreach (var employee in employeeCollection)
-            {
-                Console.WriteLine($"Enter employee's id to correct his data");
+            Console.WriteLine($"Enter employee's id to correct his data");
 
-                if (int.TryParse(Console.ReadLine(), out int empId))
+            if (int.TryParse(Console.ReadLine(), out int empId))
+            {
+                var employeeCollection = ReadFile();
+
+                if (empId < 1 || employeeCollection.Count < empId)
                 {
-                    if (empId < 1 || employeeCollection.Count < empId)
-                    {
-                        Console.WriteLine($"Entered employee's ID not exist");
-                        ReAdd();
-                    }
-                    else
+                    Console.WriteLine($"Entered employee's ID not exist");
+                }
+                else
+                {
+                    foreach (var employee in employeeCollection)
                     {
                         if (employee.employeeId != empId)
                         {
@@ -212,7 +219,6 @@ namespace Module7HomeWork14
                             {
                                 writer.WriteLine(employeeString);
                             }
-                           
                         }
 
                         else
@@ -246,32 +252,29 @@ namespace Module7HomeWork14
                         }
                     }
                 }
-                else
-                {
-                    Console.WriteLine("no number entered");
-                    ReAdd();
-                }
+            }
+            else
+            {
+                Console.WriteLine("no number entered");
             }
         }
 
         static void Delete() /*Удаление записи о сотруднике по Id*/
         {
-
             var employeeCollection = ReadFile();
-            foreach (var employee in employeeCollection)
+
+            Console.WriteLine($"Enter employee's id to delete");
+
+            if (int.TryParse(Console.ReadLine(), out int empId))
             {
-                Console.WriteLine($"Enter employee's id to delete");
-
-                if (int.TryParse(Console.ReadLine(), out int empId))
+                if (empId < 1 | employeeCollection.Count < empId)
                 {
-
-
-                    if (empId < 1 | employeeCollection.Count < empId)
-                    {
-                        Console.WriteLine($"Entered employee's ID not exist");
-                        Delete();
-                    }
-                    else
+                    Console.WriteLine($"Entered employee's ID not exist");
+                    Delete();
+                }
+                else
+                {
+                    foreach (var employee in employeeCollection)
                     {
                         if (empId != employee.employeeId)
                         {
@@ -293,7 +296,7 @@ namespace Module7HomeWork14
                                 $"#{employee.birthDate:dd.MM.yyyy}" +
                                 $"#{employee.birthPlace}";
 
-                            using (StreamWriter writer = (File.Exists(path1)) ? File.AppendText(path1) : File.CreateText(path1))
+                            using (StreamWriter writer = (File.Exists(path)) ? File.AppendText(path) : File.CreateText(path))
 
                             {
                                 writer.WriteLine(employeeString);
@@ -301,12 +304,10 @@ namespace Module7HomeWork14
                         }
                     }
                 }
-                else
-                {
-                        Console.WriteLine($"This is not employee's ID");
-                        Delete();
-                }
-                
+            }
+            else
+            {
+                Console.WriteLine($"This is not employee's ID");
             }
         }
 
@@ -317,42 +318,37 @@ namespace Module7HomeWork14
             Console.WriteLine($"Enter 2nd date");
             var correctSecondDate = DateTime.TryParse(Console.ReadLine(), out DateTime b);
 
-                if (!correctFirstDate)
-                { Console.WriteLine($"Incorrect 1st date"); }
+            if (!correctFirstDate)
+            { Console.WriteLine($"Incorrect 1st date"); }
 
-                else if (!correctSecondDate)
-                { Console.WriteLine($"Incorrect 2nd date"); }
+            else if (!correctSecondDate)
+            { Console.WriteLine($"Incorrect 2nd date"); }
 
-                    else
+            else
+            {
+                var employeeCollection = ReadFile();
+                var sortedEmpl = new List<Employee>();
+                foreach (var employee in employeeCollection)
+                {
+                    if (a <= employee.addingTime && employee.addingTime <= b)
                     {
-                        var employeeCollection = ReadFile();
-                        foreach (var employee in employeeCollection)
-                        {
-                            if (a <= employee.addingTime && employee.addingTime <= b)
-                            {
-                                Console.WriteLine($"employee's ID: {employee.employeeId}");
-                                Console.WriteLine($"adding time: {employee.addingTime}");
-                                Console.WriteLine($"employee's full name: {employee.fullName}");
-                                Console.WriteLine($"employee's age: {employee.age}");
-                                Console.WriteLine($"employee's height: {employee.height}");
-                                Console.WriteLine($"employee's birth date: {employee.birthDate}");
-                                Console.WriteLine($"employee's birth place: {employee.birthPlace}");
-                                Console.WriteLine("-----");
-                            }
-                        }
+                        sortedEmpl.Add(employee); 
                     }
+                }
+                Print(sortedEmpl);
+            }
         }
 
         static void AscendingDateTime() /*Сортировка карточек сотрудников по возрастанию даты внесения карточки*/
         {
             var employeeCollection = ReadFile();
-            var newCollection = employeeCollection.OrderBy(e => e.addingTime);
+            var newCollection = employeeCollection.OrderBy(e => e.addingTime).ToList();
             Print(newCollection);
         }
         static void DescendingDateTime() /*Сортировка карточек сотрудников по убыванию даты внесения карточки*/
         {
             var employeeCollection = ReadFile();
-            var newCollection = employeeCollection.OrderByDescending(e => e.addingTime);
+            var newCollection = employeeCollection.OrderByDescending(e => e.addingTime).ToList();
             Print(newCollection);
         }
 
